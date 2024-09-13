@@ -10,6 +10,8 @@
         public DateTime ReleaseDate {
             get; set;
         }
-        public string? Poster { get; set; }
+        public string? Poster {
+            get; set;
+        }
     }
 }

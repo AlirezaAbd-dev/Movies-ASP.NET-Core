@@ -42,6 +42,7 @@ app.MapGet("/", () =>"Hello World");
 
  app.MapGroup("/genres").MapGenres();
  app.MapGroup("/actors").MapActors();
+app.MapGroup("/movies").MapMovies();
 
 app.Run();
 
