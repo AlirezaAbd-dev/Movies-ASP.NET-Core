@@ -29,8 +29,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
-
-
 app.UseSwagger();
 app.UseSwaggerUI();
 

@@ -10,10 +10,5 @@
         public DateTime DateOfBirth {
             get; set;
         }
-
-        public IFormFile? Picture {
-            get; set;
-        }
-
     }
 }

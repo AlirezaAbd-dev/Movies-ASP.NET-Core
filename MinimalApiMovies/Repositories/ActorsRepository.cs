@@ -1,28 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MinimalApiMovies.DTOs;
 using MinimalApiMovies.Entities;
 
 namespace MinimalApiMovies.Repositories {
-    public class ActorsRepository(ApplicationDbContext context) : IActorsRepository
-    {
-        public async Task<List<Actor>> GetAll()
-        {
-            return await context.Actors.OrderBy(a => a.Name).ToListAsync();
+    public class ActorsRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor) : IActorsRepository {
+        public async Task<List<Actor>> GetAll(PaginationDTO pagination) {
+            var queryable = context.Actors.AsQueryable();
+            await httpContextAccessor.HttpContext!
+                .InsertPaginationParameterInResponseHeader(queryable);
+            return await queryable.Paginate(pagination).OrderBy(a => a.Name).ToListAsync();
         }
 
-        public async Task<Actor?> GetById(int id)
-        {
-            return await context.Actors.AsNoTracking().FirstOrDefaultAsync(a=> a.Id == id);
+        public async Task<Actor?> GetById(int id) {
+            return await context.Actors.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<int> Create(Actor actor)
-        {
+        public async Task<List<Actor>> GetByName(string name) {
+            return await context.Actors
+                .Where(a => a.Name.Contains(name)).OrderBy((a) => a.Name).ToListAsync();
+        }
+
+        public async Task<int> Create(Actor actor) {
             context.Add(actor);
             await context.SaveChangesAsync();
             return actor.Id;
         }
 
-        public async Task<bool> Exists(int id)
-        {
+        public async Task<bool> Exists(int id) {
             return await context.Actors.AnyAsync(a => a.Id == id);
         }
 
@@ -31,8 +35,7 @@ namespace MinimalApiMovies.Repositories {
             await context.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
-        {
+        public async Task Delete(int id) {
             await context.Actors.Where(a => a.Id == id).ExecuteDeleteAsync();
         }
     }
