@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinimalApiMovies;
 
@@ -11,9 +12,11 @@ using MinimalApiMovies;
 namespace MinimalApiMovies.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240914162104_comments")]
+    partial class comments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,28 +48,6 @@ namespace MinimalApiMovies.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Actors");
-                });
-
-            modelBuilder.Entity("MinimalApiMovies.Entities.ActorMovie", b =>
-                {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ActorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Character")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.HasKey("MovieId", "ActorId");
-
-                    b.HasIndex("ActorId");
-
-                    b.ToTable("ActorsMovies");
                 });
 
             modelBuilder.Entity("MinimalApiMovies.Entities.Comment", b =>
@@ -109,21 +90,6 @@ namespace MinimalApiMovies.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("MinimalApiMovies.Entities.GenreMovie", b =>
-                {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MovieId", "GenreId");
-
-                    b.HasIndex("GenreId");
-
-                    b.ToTable("GenresMovies");
-                });
-
             modelBuilder.Entity("MinimalApiMovies.Entities.Movie", b =>
                 {
                     b.Property<int>("id")
@@ -152,25 +118,6 @@ namespace MinimalApiMovies.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("MinimalApiMovies.Entities.ActorMovie", b =>
-                {
-                    b.HasOne("MinimalApiMovies.Entities.Actor", "Actor")
-                        .WithMany("ActorsMovies")
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MinimalApiMovies.Entities.Movie", "Movie")
-                        .WithMany("ActorsMovies")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Actor");
-
-                    b.Navigation("Movie");
-                });
-
             modelBuilder.Entity("MinimalApiMovies.Entities.Comment", b =>
                 {
                     b.HasOne("MinimalApiMovies.Entities.Movie", null)
@@ -180,42 +127,9 @@ namespace MinimalApiMovies.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MinimalApiMovies.Entities.GenreMovie", b =>
-                {
-                    b.HasOne("MinimalApiMovies.Entities.Genre", "Genre")
-                        .WithMany("GenresMovies")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MinimalApiMovies.Entities.Movie", "Movie")
-                        .WithMany("GenresMovies")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genre");
-
-                    b.Navigation("Movie");
-                });
-
-            modelBuilder.Entity("MinimalApiMovies.Entities.Actor", b =>
-                {
-                    b.Navigation("ActorsMovies");
-                });
-
-            modelBuilder.Entity("MinimalApiMovies.Entities.Genre", b =>
-                {
-                    b.Navigation("GenresMovies");
-                });
-
             modelBuilder.Entity("MinimalApiMovies.Entities.Movie", b =>
                 {
-                    b.Navigation("ActorsMovies");
-
                     b.Navigation("Comments");
-
-                    b.Navigation("GenresMovies");
                 });
 #pragma warning restore 612, 618
         }

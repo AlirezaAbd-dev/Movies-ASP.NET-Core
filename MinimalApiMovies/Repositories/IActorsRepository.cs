@@ -12,4 +12,5 @@ public interface IActorsRepository
     Task<bool> Exists(int id);
     Task Update(Actor actor);
     Task Delete(int id);
+    Task<List<int>> Exists(List<int> ids);
 }

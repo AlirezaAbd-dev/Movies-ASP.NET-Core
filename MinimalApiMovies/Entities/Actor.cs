@@ -4,8 +4,7 @@
             get; set;
         }
 
-        public string Name
-        {
+        public string Name {
             get;
             set;
         } = null!;
@@ -17,6 +16,7 @@
         public string? Picture {
             get; set;
         }
+        public List<ActorMovie> ActorsMovies { get; set; } = new List<ActorMovie>();
 
     }
 }

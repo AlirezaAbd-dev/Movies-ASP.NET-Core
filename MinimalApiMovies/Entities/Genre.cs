@@ -9,5 +9,9 @@ namespace MinimalApiMovies.Entities {
         public string Name {
             get; set;
         } = null!;
+
+        public List<GenreMovie> GenresMovies {
+            get; set;
+        } = new List<GenreMovie>();
     }
 }
