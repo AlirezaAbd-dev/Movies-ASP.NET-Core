@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MinimalApiMovies.Entities;
-using System.Linq.Expressions;
 
 namespace MinimalApiMovies.Repositories {
     public class GenresRepository : IGenresRepository {
@@ -23,6 +22,10 @@ namespace MinimalApiMovies.Repositories {
                 .Where(g => ids.Contains(g.Id)).Select(g => g.Id)
                 .ToListAsync();
             ;
+        }
+
+        public async Task<bool> Exists(int id, string name) {
+            return await context.Genres.AnyAsync(g => g.Id != id && g.Name == name);
         }
 
         public async Task<List<Genre>> GetAll() {

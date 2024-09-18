@@ -42,6 +42,7 @@ namespace MinimalApiMovies {
         public DbSet<ActorMovie> ActorsMovies {
             get; set;
         }
+        public DbSet<Error> Errors { get; set; }
 
 
     }
