@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using MinimalApiMovies.DTOs;
 using MinimalApiMovies.Entities;
@@ -11,7 +12,8 @@ namespace MinimalApiMovies.Endpoints {
     public static class GenresEndpoints {
         public static RouteGroupBuilder MapGenres(this RouteGroupBuilder group) {
             group.MapGet("/", GetGenres)
-                .CacheOutput(c => c.Expire(TimeSpan.FromSeconds(60)).Tag("genres-get"));
+                .CacheOutput(c => c.Expire(TimeSpan.FromSeconds(60)).Tag("genres-get"))
+                .RequireAuthorization();
             group.MapGet("/{id:int}", GetById);
             group.MapPost("/", Create).AddEndpointFilter<ValidationFilter<CreateGenreDTO>>();
             group.MapPut("/{id:int}", Update).AddEndpointFilter<ValidationFilter<CreateGenreDTO>>();

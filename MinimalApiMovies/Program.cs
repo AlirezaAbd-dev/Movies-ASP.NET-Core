@@ -1,11 +1,14 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MinimalApiMovies;
 using MinimalApiMovies.Endpoints;
 using MinimalApiMovies.Entities;
 using MinimalApiMovies.Repositories;
 using MinimalApiMovies.Services;
+using Microsoft.IdentityModel.Tokens;
+using MinimalApiMovies.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,13 @@ builder.Services
     .AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer("name=DefaultConnection")
     );
+
+builder.Services.AddIdentityCore<IdentityUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<UserManager<IdentityUser>>();
+builder.Services.AddScoped<SignInManager<IdentityUser>>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy(name: "free", policy => {
@@ -41,6 +51,19 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddProblemDetails();
 
+builder.Services.AddAuthentication().AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
+        IssuerSigningKeys = KeysHandler.GetAllKeys(builder.Configuration),
+        //IssuerSigningKey = KeysHandler.GetKey(builder.Configuration).First()
+    }
+);
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -48,15 +71,17 @@ app.UseSwaggerUI();
 app.UseStaticFiles();
 app.UseCors("free");
 app.UseOutputCache();
+app.UseAuthorization();
 
 app.UseExceptionHandler(exceptionHandlerApp => exceptionHandlerApp.Run(async context => {
     var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
     var exception = exceptionHandlerFeature!.Error;
 
-    var error = new Error();
-    error.Date = DateTime.UtcNow;
-    error.ErrorMessage = exception.Message;
-    error.StackTrace = exception.StackTrace;
+    var error = new Error {
+        Date = DateTime.UtcNow,
+        ErrorMessage = exception.Message,
+        StackTrace = exception.StackTrace
+    };
 
     var repository = context.RequestServices.GetRequiredService<IErrorsRepository>();
 
